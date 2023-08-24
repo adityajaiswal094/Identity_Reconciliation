@@ -3,6 +3,7 @@ const { config } = require("dotenv");
 const identifyContact = require("./controller.js");
 const db = require("./database/databaseConnection.js");
 const Contact = require("./database/ContactModel.js");
+const LinkedContact = require("./database/LinkedContactModel.js");
 
 config({ path: "./config/config.env" });
 
@@ -26,6 +27,9 @@ app.get("/database", async (req, res) => {
     })
     .catch((error) => console.error(error));
 
+  await LinkedContact.findAll().then((resObjs) => {
+    console.log(resObjs);
+  }).catch((error) => console.error(error));
     res.sendStatus(200);
 });
 

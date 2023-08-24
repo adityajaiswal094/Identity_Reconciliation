@@ -19,35 +19,20 @@ const Contact = db.define(
     updatedAt: true,
     paranoid: true,
     deletedAt: true,
+  }, {
+    indexes: [
+      {
+        fields: ['phoneNumber', 'email', 'linkPrecedence'],
+        using: 'BTREE'
+      }
+    ]
   }
 );
 
 // Contact.sync({ alter: true })
 //   .then(() => {
-//     console.log("Table and Model synced successfully.");
+//     console.log("Table and Model Contact synced successfully.");
 //   })
 //   .catch((error) => console.error(error));
 
 module.exports = Contact;
-
-// module.exports = (sequelize, DataTypes) => {
-//     const contact = sequelize.define(
-//         "Contacts",
-//         {
-//             id: {
-// type: DataTypes.INTEGER,
-// primaryKey: true,
-// autoIncrement: true,
-//             },
-// phoneNumber: DataTypes.TEXT,
-// email: DataTypes.TEXT,
-// linkedId: DataTypes.INTEGER,
-// linkPrecedence: DataTypes.TEXT,
-//         },
-//         {
-//             deletedAt: DataTypes.DATE,
-//         }
-//     );
-
-//     return contact;
-// };
