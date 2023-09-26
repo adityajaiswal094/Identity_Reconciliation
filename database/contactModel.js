@@ -12,21 +12,22 @@ const Contact = db.define(
     phoneNumber: Sequelize.DataTypes.TEXT,
     email: Sequelize.DataTypes.TEXT,
     linkedId: Sequelize.DataTypes.INTEGER,
-    linkPrecedence: {type: Sequelize.DataTypes.TEXT, defaultValue: "primary"},
+    linkPrecedence: { type: Sequelize.DataTypes.TEXT, defaultValue: "primary" },
   },
   {
     createdAt: true,
     updatedAt: true,
     paranoid: true,
     deletedAt: true,
-  }, {
-    indexes: [
-      {
-        fields: ['phoneNumber', 'email', 'linkPrecedence'],
-        using: 'BTREE'
-      }
-    ]
-  }
+  },
+  // {
+  //   indexes: [
+  //     {
+  //       fields: ["phoneNumber", "email", "linkPrecedence"],
+  //       using: "BTREE",
+  //     },
+  //   ],
+  // }
 );
 
 // Contact.sync({ alter: true })

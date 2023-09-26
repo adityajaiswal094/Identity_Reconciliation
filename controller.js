@@ -3,95 +3,80 @@ const { Op } = require("sequelize");
 const db = require("./database/databaseConnection");
 const Contact = require("./database/ContactModel");
 const LinkedContact = require("./database/LinkedContactModel");
-
-function addElements(arr, phnOrEmail) {
-  if (arr.indexOf(phnOrEmail) === -1) {
-    arr.push(phnOrEmail);
-  }
-}
+const {
+  getByPhoneNumber,
+  createNewContact,
+  getByEmail,
+} = require("./database/databaseActions");
 
 const identifyContact = async (req, res) => {
   try {
-    const resObj = {
-      contact: {
-        primaryContactId: "",
-        emails: [],
-        phoneNumbers: [],
-        secondaryContactIds: [],
-      },
+    const linkedContact = {
+      primaryContactId: "",
+      emails: [],
+      phoneNumbers: [],
+      secondaryContactIds: [],
     };
 
+    let fetchContacts;
+
     const body = req.body;
-    console.log(body);
 
-    // check 0: if both not null, and unique => create new, not unique => link with primary
-    if (body.email !== null && body.phoneNumber !== null) {
-      const fetchPrimaryContact = await Contact.findAll({
-        where: {
-          [Op.or]: [{ email: body.email }, { phoneNumber: body.phoneNumber }],
-        },
-      });
+		// console.log(email, phoneNumber);
 
-      if (fetchPrimaryContact.length !== 0) {
-        await Contact.create({
+    if (body.phoneNumber !== "") {
+      fetchContacts = await getByPhoneNumber.findAll(body.phoneNumber);
+
+			console.log(fetchContacts);
+
+      // if (fetchContacts.length !== 0) {
+      //   createNewContact({
+      //     email: email,
+      //     phoneNumber: phoneNumber,
+      //     linkedId: fetchContacts[0].id,
+      //     linkPrecedence: "secondary",
+      //   });
+      // } else {
+        await createNewContact({
           email: body.email,
           phoneNumber: body.phoneNumber,
-          linkedId: fetchPrimaryContact[0].id,
-          linkPrecedence: "secondary",
         });
+      // }
 
-        const fetchContact = await Contact.findOne({
-          where: {
-            [Op.and]: [
-              { email: body.email },
-              { phoneNumber: body.phoneNumber },
-            ],
-          },
-        });
-
-				// console.log(fetchContact.email, fetchContact.phoneNumber);
-				// res.status(200).json({fetchContact});
-				// return;
-
-
-        // await LinkedContact.create({
-        // 	primaryContactId: fetchContact.id,
-        // 	emails: [fetchContact.email],
-        // 	phoneNumbers: [fetchContact.phoneNumber],
-        // });
-
-
-        await LinkedContact.update(
-          {
-            emails: db.literal(
-              `array_append("emails", '${fetchContact.email}')`
-            ),
-            phoneNumbers: db.literal(
-              `array_append("phoneNumbers", '${fetchContact.phoneNumber}')`
-            ),
-            secondaryContactIds: db.literal(
-              `array_append("secondaryContactIds", '${fetchContact.id}')`
-            ),
-          },
-          {
-            where: {
-              primaryContactId: fetchPrimaryContact[0].id,
-            },
-          }
-        );
-      }
-
-      const fetchResObject = await LinkedContact.findOne({
-        attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
-        where: {
-          emails: {
-            [Op.overlap]: [body.email],
-          },
-        },
-      });
-
-      res.status(200).json({ fetchResObject });
+    //   fetchContacts = getByPhoneNumber.findAll(phoneNumber);
     }
+		//  else {
+    //   fetchContacts = getByEmail.findAll(email);
+
+    //   if (fetchContacts.length !== 0) {
+    //     createNewContact({
+    //       email: email,
+    //       phoneNumber: phoneNumber,
+    //       linkedId: fetchContacts[0].id,
+    //       linkPrecedence: "secondary",
+    //     });
+    //   } else {
+    //     createNewContact({
+    //       email: email,
+    //       phoneNumber: phoneNumber,
+    //     });
+    //   }
+
+    //   fetchContacts = getByEmail.findAll(email);
+    // }
+
+    // fetchContacts.forEach((contact) => {
+    //   if (fetchContacts.linkPrecedence === "primary") {
+    //     linkedContact.primaryContactId = fetchContacts.id;
+    //   } else if (fetchContacts.linkPrecedence === "secondary") {
+    //     linkedContact.secondaryContactIds.push(fetchContacts.id);
+    //   }
+
+    //   linkedContact.emails.push(fetchContacts.email);
+    //   linkedContact.phoneNumbers.push(fetchContacts.phoneNumber);
+    // });
+
+		res.sendStatus(200);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: `Error: ${error}` });

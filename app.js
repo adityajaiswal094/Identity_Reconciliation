@@ -27,10 +27,10 @@ app.get("/database", async (req, res) => {
     })
     .catch((error) => console.error(error));
 
-  await LinkedContact.findAll().then((resObjs) => {
-    console.log(resObjs);
-  }).catch((error) => console.error(error));
-    res.sendStatus(200);
+  // await LinkedContact.findAll().then((resObjs) => {
+  //   console.log(resObjs);
+  // }).catch((error) => console.error(error));
+  //   res.sendStatus(200);
 });
 
 app.post("/identify", identifyContact);

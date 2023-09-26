@@ -92,12 +92,6 @@ const createNewContact = async (
         linkedId: linkedId,
         linkPrecedence: linkPrecedence,
       },
-      {
-        createdAt: true,
-        updatedAt: true,
-        paranoid: true,
-        deletedAt: true,
-      }
     );
   } catch (error) {
     throw new Error(error);
